@@ -1,0 +1,5 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.ydespreaux.shared.autoconfigure.kafka.connect.actuator.KafkaConnectHealthIndicatorAutoConfiguration,\
+com.ydespreaux.shared.autoconfigure.kafka.connect.KafkaConnectAutoConfiguration,\
+com.ydespreaux.shared.autoconfigure.kafka.connect.KafkaConnectDataAutoConfiguration,\
+com.ydespreaux.shared.autoconfigure.kafka.connect.KafkaConnectRestApiAutoConfiguration
