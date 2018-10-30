@@ -1,0 +1,4 @@
+# Auto Configure
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.ydespreaux.shared.data.autoconfigure.elasticsearch.JestElasticsearchAutoConfiguration,\
+com.ydespreaux.shared.data.autoconfigure.elasticsearch.JestElasticsearchDataAutoConfiguration

@@ -1,0 +1,1 @@
+package com.ydespreaux.shared.data.elasticsearch;import java.util.List;public interface ScrolledPage<T> {    String getScrollId();    Integer getTotalElements();    List<T> getContent();}
