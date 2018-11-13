@@ -27,7 +27,7 @@
         <confluent-elasticsearch.version>5.0.0</confluent-elasticsearch.version>
         <avro.version>1.8.2</avro.version>
         <!-- Swagger version -->
-        <swagger.version>2.7.0</swagger.version>
+        <swagger.version>2.9.2</swagger.version>
         <calcite.version>1.2.0-incubating</calcite.version>
         <!-- lib-test-containers version -->
         <lib-testcontainers.version>1.0.0-SNAPSHOT</lib-testcontainers.version>

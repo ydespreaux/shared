@@ -1,16 +1,15 @@
 package com.ydespreaux.shared.reactive.server;
 
-import java.time.Duration;
-import java.util.Random;
-import java.util.stream.Stream;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import reactor.core.publisher.Flux;
+
+import java.time.Duration;
+import java.util.Random;
+import java.util.stream.Stream;
 
 @RestController
 public class TemperatureController {
@@ -28,7 +27,7 @@ public class TemperatureController {
                 logger.info(msg);
             }))
             .map(s -> Integer.valueOf(s))
-            .delayElements(Duration.ofSeconds(5));
+                .delayElements(Duration.ofSeconds(1));
 
     }
 }
