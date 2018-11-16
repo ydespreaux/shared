@@ -5,6 +5,9 @@ import io.searchbox.annotations.JestId;
 import io.searchbox.annotations.JestVersion;
 import lombok.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @Builder
@@ -21,4 +24,6 @@ public class Book {
     private String title;
     private String description;
     private Double price;
+    private LocalDate publication;
+    private LocalDateTime lastUpdated;
 }
