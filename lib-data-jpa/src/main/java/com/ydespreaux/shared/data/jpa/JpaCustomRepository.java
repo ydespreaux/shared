@@ -20,10 +20,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.springframework.data.jpa.repository.query.QueryUtils.toOrders;
 
@@ -179,4 +176,19 @@ public class JpaCustomRepository<T, K extends Serializable> extends SimpleJpaRep
         return transformers;
     }
 
+    /**
+     *
+     * @param query
+     * @param converter
+     * @param <S>
+     * @param <D>
+     * @return
+     */
+    protected <S extends T, D> Optional<D> transformSingleResult(TypedQuery<S> query, ModelConverter<D, S> converter) {
+        final List<S> entities = query.getResultList();
+        if (entities.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(converter.convertToDTO(entities.get(0)));
+    }
 }

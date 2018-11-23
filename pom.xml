@@ -22,6 +22,7 @@
         <version>2.0.5.RELEASE</version>
     </parent>
     <modules>
+        <module>lib-commons</module>
         <module>lib-data-commons</module>
         <module>lib-data-jpa</module>
         <module>lib-data-elasticsearch</module>
