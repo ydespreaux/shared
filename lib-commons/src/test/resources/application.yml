@@ -1,0 +1,13 @@
+server:
+  proxy:
+    enabled: true
+    url: proxy-internet.net-courrier.extra.laposte.fr
+    port: 8080
+    username: xpax624
+    password: h3R(y5A%23
+---
+spring:
+  profiles: noproxy
+server:
+  proxy:
+    enabled: false

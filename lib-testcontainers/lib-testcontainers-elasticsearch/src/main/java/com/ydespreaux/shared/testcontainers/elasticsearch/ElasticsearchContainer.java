@@ -26,7 +26,7 @@ public class ElasticsearchContainer<SELF extends ElasticsearchContainer<SELF>> e
 
     private static final int ELASTICSEARCH_DEFAULT_PORT = 9200;
     private static final int ELASTICSEARCH_DEFAULT_TCP_PORT = 9300;
-    private static final String ELASTICSEARCH_DEFAULT_BASE_URL = "elasticsearch/elasticsearch";
+    private static final String ELASTICSEARCH_DEFAULT_BASE_URL = "docker.elastic.co/elasticsearch/elasticsearch";
     private static final String ELASTICSEARCH_DEFAULT_VERSION = "5.6.8";
 
     /**
