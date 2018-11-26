@@ -8,6 +8,7 @@ import kafka.utils.ZkUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -98,7 +99,7 @@ public class ITConfluentKafkaContainerTest {
         ContainerProperties containerProperties = new ContainerProperties("TOPIC_3");
         containerProperties.setMessageListener((MessageListener<String, String>) record -> records.add(record));
         KafkaMessageListenerContainer<String, ?> listenerContainer = new KafkaMessageListenerContainer<>(
-                container.createKafkaAvroConsumerFactory("an_junit_group"),
+                container.createKafkaConsumerFactory("an_junit_group", new StringDeserializer(), new StringDeserializer()),
                 containerProperties);
         listenerContainer.start();
         ContainerTestUtils.waitForAssignment(listenerContainer, 1);
