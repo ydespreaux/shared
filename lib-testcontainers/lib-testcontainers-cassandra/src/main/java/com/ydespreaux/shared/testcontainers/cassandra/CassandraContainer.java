@@ -188,14 +188,39 @@ public class CassandraContainer<SELF extends CassandraContainer<SELF>> extends G
             throw new IllegalArgumentException(format("Resource with path %s must be a directory", scriptsDir.toString()));
         }
         // Create the volume that will be need for scripts
-        this.addFileSystemBind(scriptsDir.toString(), DB_SCHEMA_DIRECTORY, BindMode.READ_ONLY);
+        this.addFileSystemBind(scriptsDir.toString(), DB_SCHEMA_DIRECTORY + '/' + scriptsDir.getFileName(), BindMode.READ_ONLY);
         // Add all scripts in cqlScripts attribute
-        try (Stream<Path> paths = Files.list(scriptsDir)){
-            paths.filter(path -> path.toFile().isFile()).sorted().forEach(path -> this.cqlScripts.add(DB_SCHEMA_DIRECTORY + "/" + path.getFileName()));
+        scanScripts(scriptsDir);
+        return this.self();
+    }
+
+    /**
+     *
+     * @param rootDirectory
+     */
+    private void scanScripts(Path rootDirectory) {
+        this.scanScriptsImpl(rootDirectory, rootDirectory);
+    }
+
+    /**
+     *
+     * @param rootDirectory
+     * @param scriptDirectory
+     */
+    private void scanScriptsImpl(Path rootDirectory, Path scriptDirectory) {
+        try (Stream<Path> paths = Files.list(scriptDirectory)){
+            paths.sorted()
+                    .forEach(path -> {
+                        if (path.toFile().isFile()) {
+                            String subPath = path.subpath(rootDirectory.getNameCount(), path.getNameCount()).toString().replaceAll("\\\\", "/");
+                            this.cqlScripts.add(DB_SCHEMA_DIRECTORY + "/" + rootDirectory.getFileName() + "/" + subPath);
+                        }else {
+                            scanScriptsImpl(rootDirectory, path);
+                        }
+                    });
         } catch (IOException e) {
             throw new IllegalArgumentException("Error listing scripts", e);
         }
-        return this.self();
     }
 
     /**

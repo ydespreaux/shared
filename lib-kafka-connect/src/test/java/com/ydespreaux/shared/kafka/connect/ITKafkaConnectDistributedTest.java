@@ -4,8 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ydespreaux.shared.autoconfigure.kafka.connect.KafkaConnectProperties;
 import com.ydespreaux.shared.kafka.connect.app.KafkaConnectApplication;
+import com.ydespreaux.shared.testcontainers.kafka.config.TopicConfiguration;
 import com.ydespreaux.shared.testcontainers.kafka.rule.ConfluentKafkaConnectContainer;
-import com.ydespreaux.shared.testcontainers.kafka.utils.KafkaTestUtils;
 import com.ydespreaux.shared.testcontainers.mysql.MySQLContainer;
 import org.apache.kafka.connect.runtime.rest.entities.CreateConnectorRequest;
 import org.junit.BeforeClass;
@@ -79,7 +79,7 @@ public class ITKafkaConnectDistributedTest {
     @BeforeClass
     public static void onSetupClass() throws IOException {
         System.setProperty("spring.datasource.connect.url", mySQLContainer.getInternalURL());
-        KafkaTestUtils.createTopic(kafkaContainer, TOPIC_NAME, 3, true);
+        kafkaContainer.createTopic(new TopicConfiguration(TOPIC_NAME, 3, true));
     }
 
     @Test

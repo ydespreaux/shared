@@ -4,16 +4,24 @@ import com.ydespreaux.shared.testcontainers.kafka.config.TopicConfiguration;
 import com.ydespreaux.shared.testcontainers.kafka.containers.KafkaContainer;
 import com.ydespreaux.shared.testcontainers.kafka.containers.SchemaRegistryContainer;
 import com.ydespreaux.shared.testcontainers.kafka.containers.ZookeeperContainer;
-import com.ydespreaux.shared.testcontainers.kafka.utils.KafkaTestUtils;
+import io.confluent.kafka.serializers.KafkaAvroDeserializer;
+import io.confluent.kafka.serializers.KafkaAvroDeserializerConfig;
+import io.confluent.kafka.serializers.KafkaAvroSerializerConfig;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.common.serialization.Deserializer;
+import org.apache.kafka.common.serialization.Serializer;
+import org.apache.kafka.common.serialization.StringDeserializer;
 import org.junit.rules.ExternalResource;
+import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.core.DefaultKafkaProducerFactory;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.testcontainers.containers.Network;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
+import static com.ydespreaux.shared.testcontainers.common.utils.ContainerUtils.execCmd;
 import static com.ydespreaux.shared.testcontainers.common.utils.ContainerUtils.getContainerHostname;
 
 /**
@@ -270,7 +278,7 @@ public class ConfluentKafkaContainer<SELF extends ConfluentKafkaContainer<SELF>>
         kafkaContainer.start();
         // Create default topics
         if (!this.topics.isEmpty()) {
-            KafkaTestUtils.createTopics(this, this.topics);
+            this.createTopics(this.topics);
         }
 
         if (this.schemaRegistryEnabled) {
@@ -303,5 +311,137 @@ public class ConfluentKafkaContainer<SELF extends ConfluentKafkaContainer<SELF>>
     @Override
     public SELF self() {
         return (SELF) this;
+    }
+
+    /**
+     *
+     * @param <K>
+     * @param <V>
+     * @return
+     */
+    public <K, V> KafkaTemplate<K, V> createKafkaTemplate() {
+        return createKafkaTemplate("org.apache.kafka.common.serialization.StringSerializer",
+                "io.confluent.kafka.serializers.KafkaAvroSerializer");
+    }
+
+    /**
+     * @param keySerializerClass
+     * @param valueSerializerClass
+     * @param <K>
+     * @param <V>
+     * @return
+     */
+    public <K, V> KafkaTemplate<K, V> createKafkaTemplate(String keySerializerClass, String valueSerializerClass) {
+        return new KafkaTemplate<>(new DefaultKafkaProducerFactory<>(producerConfigs(keySerializerClass, valueSerializerClass)));
+    }
+
+    /**
+     * @param keySerializer
+     * @param valueSerializer
+     * @param <K>
+     * @param <V>
+     * @return
+     */
+    public <K, V> KafkaTemplate<K, V> createKafkaTemplate(Serializer<K> keySerializer, Serializer<V> valueSerializer) {
+        return new KafkaTemplate<>(new DefaultKafkaProducerFactory<>(producerConfigs(null, null), keySerializer, valueSerializer));
+    }
+
+    /**
+     * Build properties
+     *
+     * @return
+     */
+    private Map<String, Object> producerConfigs(String keySerializerClass, String valueSerializerClass) {
+        Map<String, Object> props = new HashMap<>();
+        if (this.isSchemaRegistryEnabled()) {
+            props.put(KafkaAvroSerializerConfig.SCHEMA_REGISTRY_URL_CONFIG, this.getSchemaRegistryServers());
+        }
+        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, this.getBootstrapServers());
+        if (keySerializerClass != null) {
+            props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, keySerializerClass);
+        }
+        if (valueSerializerClass != null) {
+            props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, valueSerializerClass);
+        }
+        return props;
+    }
+
+    /**
+     *
+     * @param group
+     * @param keyDeserializer
+     * @param valueDeserializer
+     * @param <K>
+     * @param <V>
+     * @return
+     */
+    public <K, V> DefaultKafkaConsumerFactory<K, V> createKafkaConsumerFactory(final String group,
+                                                                               final Deserializer<K> keyDeserializer,
+                                                                               final Deserializer<V> valueDeserializer) {
+        Map<String, Object> properties = org.springframework.kafka.test.utils.KafkaTestUtils.consumerProps(this.getBootstrapServers(), group, "true");
+        return new DefaultKafkaConsumerFactory<>(properties, keyDeserializer, valueDeserializer);
+    }
+
+    /**
+     * @param group
+     * @return
+     */
+    public DefaultKafkaConsumerFactory<String, ?> createKafkaAvroConsumerFactory(String group) {
+        Map<String, String> config = new HashMap<>();
+        config.put(KafkaAvroSerializerConfig.SCHEMA_REGISTRY_URL_CONFIG, this.getSchemaRegistryServers());
+        config.put(KafkaAvroDeserializerConfig.SPECIFIC_AVRO_READER_CONFIG, "true");
+        KafkaAvroDeserializer valueDeserializer = new KafkaAvroDeserializer();
+        valueDeserializer.configure(config, false);
+        return createKafkaConsumerFactory(group, new StringDeserializer(), valueDeserializer);
+    }
+
+    /**
+     *
+     * @param topic
+     */
+    public void createTopic(TopicConfiguration topic) {
+        createTopics(Collections.singletonList(topic));
+    }
+
+    /**
+     *
+     * @param topics
+     */
+    public void createTopics(List<TopicConfiguration> topics) {
+        if (!topics.isEmpty()) {
+            final String zookeeper = this.getZookeeperConnect();
+            final KafkaContainer kafkaContainer = this.getKafkaContainer();
+            topics.forEach(topic -> {
+                execCmd(kafkaContainer.getDockerClient(),
+                        kafkaContainer.getContainerId(),
+                        getCreateTopicCmd(topic.getName(), topic.getPartitions(), topic.isCompact(), zookeeper, 1));
+            });
+        }
+    }
+
+    /**
+     * @param topicName
+     * @param partitions
+     * @param kafkaZookeeperConnect
+     * @param brokersCount
+     * @return
+     */
+    private String[] getCreateTopicCmd(String topicName, int partitions, boolean compact, String kafkaZookeeperConnect, int brokersCount) {
+        String[] args = new String[]{
+                "kafka-topics",
+                "--create", "--topic", topicName,
+                "--partitions", String.valueOf(partitions),
+                "--replication-factor", String.valueOf(brokersCount),
+                "--if-not-exists",
+                "--zookeeper", kafkaZookeeperConnect
+        };
+        if (compact) {
+            int orignalLength = args.length;
+            args = Arrays.copyOf(args, orignalLength + 2);
+            args[orignalLength] = "--config";
+            args[orignalLength + 1] = "cleanup.policy=compact";
+        }
+
+        return args;
     }
 }

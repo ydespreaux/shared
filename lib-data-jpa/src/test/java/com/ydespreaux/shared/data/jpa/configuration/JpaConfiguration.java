@@ -15,7 +15,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
  */
 @Configuration
 @EnableAutoConfiguration
-@EntityScan(basePackages = {"com.ydespreaux.shared.data.jpa.configuration.entities"})
+@EntityScan(basePackages = {"com.ydespreaux.shared.data.jpa.configuration.entities", "org.springframework.data.jpa.convert.threeten"})
 @EnableJpaRepositories(basePackages = {"com.ydespreaux.shared.data.jpa.configuration.repository"})
 public class JpaConfiguration {
 

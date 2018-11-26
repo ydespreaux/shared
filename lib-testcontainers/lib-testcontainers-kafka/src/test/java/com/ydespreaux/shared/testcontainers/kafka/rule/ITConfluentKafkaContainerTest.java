@@ -1,19 +1,19 @@
 package com.ydespreaux.shared.testcontainers.kafka.rule;
 
 
+import com.ydespreaux.shared.testcontainers.kafka.config.TopicConfiguration;
 import com.ydespreaux.shared.testcontainers.kafka.domain.WorkstationAvro;
-import com.ydespreaux.shared.testcontainers.kafka.utils.KafkaTestUtils;
 import kafka.admin.AdminUtils;
 import kafka.utils.ZkUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.listener.KafkaMessageListenerContainer;
 import org.springframework.kafka.listener.MessageListener;
 import org.springframework.kafka.support.SendResult;
@@ -45,7 +45,7 @@ public class ITConfluentKafkaContainerTest {
 
     @Test
     public void createTopic() {
-        KafkaTestUtils.createTopic(container, "TOPIC1", 1, false);
+        container.createTopic(new TopicConfiguration("TOPIC1", 1, false));
 
         ZkUtils zkUtils = ZkUtils.apply(container.getZookeeperServer(), 6000, 6000, false);
         boolean exists = AdminUtils.topicExists(zkUtils, "TOPIC1");
@@ -54,7 +54,7 @@ public class ITConfluentKafkaContainerTest {
 
     @Test
     public void createCompactTopic() {
-        KafkaTestUtils.createTopic(container, "TOPIC_COMPACT_1", 1, true);
+        container.createTopic(new TopicConfiguration("TOPIC_COMPACT_1", 1, true));
 
         ZkUtils zkUtils = ZkUtils.apply(container.getZookeeperServer(), 6000, 6000, false);
         boolean exists = AdminUtils.topicExists(zkUtils, "TOPIC_COMPACT_1");
@@ -68,9 +68,9 @@ public class ITConfluentKafkaContainerTest {
          * List des messages envoyés avec succès
          */
         BlockingQueue<ProducerRecord<String, String>> records = new LinkedBlockingQueue<>();
-        KafkaTestUtils.createTopic(container, "TOPIC2", 1, false);
+        container.createTopic(new TopicConfiguration("TOPIC2", 1, false));
 
-        KafkaTemplate<String, String> template = KafkaTestUtils.createKafkaTemplate(container, new StringSerializer(), new StringSerializer());
+        KafkaTemplate<String, String> template = container.createKafkaTemplate(new StringSerializer(), new StringSerializer());
         ListenableFuture<SendResult<String, String>> future = template.send("TOPIC2", "KEY", "Message : produceMessage()");
         future.addCallback(
                 success -> {
@@ -88,22 +88,22 @@ public class ITConfluentKafkaContainerTest {
 
     @Test
     public void consumeMessage() throws Exception {
-        KafkaTestUtils.createTopic(container, "TOPIC_3", 1, false);
+        container.createTopic(new TopicConfiguration("TOPIC_3", 1, false));
 
         /**
          * List des messages reçus
          */
         BlockingQueue<ConsumerRecord<String, String>> records = new LinkedBlockingQueue<>();
 
-        KafkaMessageListenerContainer<String, ?> listenerContainer = KafkaTestUtils.createListenerContainer(container,
-                "an_junit_group",
-                "TOPIC_3",
-                new StringDeserializer(),
-                new StringDeserializer(),
-                record -> records.add(record));
+        ContainerProperties containerProperties = new ContainerProperties("TOPIC_3");
+        containerProperties.setMessageListener((MessageListener<String, String>) record -> records.add(record));
+        KafkaMessageListenerContainer<String, ?> listenerContainer = new KafkaMessageListenerContainer<>(
+                container.createKafkaAvroConsumerFactory("an_junit_group"),
+                containerProperties);
+        listenerContainer.start();
         ContainerTestUtils.waitForAssignment(listenerContainer, 1);
 
-        KafkaTemplate<String, String> template = KafkaTestUtils.createKafkaTemplate(container, new StringSerializer(), new StringSerializer());
+        KafkaTemplate<String, String> template = container.createKafkaTemplate(new StringSerializer(), new StringSerializer());
         template.send("TOPIC_3", "KEY_1", "Message : consumeMessage()");
 
         ConsumerRecord<String, String> record = records.poll(60, TimeUnit.SECONDS);
@@ -124,8 +124,8 @@ public class ITConfluentKafkaContainerTest {
          * List des messages envoyés avec succès
          */
         BlockingQueue<ProducerRecord<String, WorkstationAvro>> records = new LinkedBlockingQueue<>();
-        KafkaTestUtils.createTopic(container, "TOPIC2", 1, false);
-        KafkaTemplate<String, WorkstationAvro> template = KafkaTestUtils.createKafkaTemplate(container);
+        container.createTopic(new TopicConfiguration("TOPIC2", 1, false));
+        KafkaTemplate<String, WorkstationAvro> template = container.createKafkaTemplate();
 
         WorkstationAvro workstation = WorkstationAvro.newBuilder().setId(1L).setName("WS-123456").setSerialNumber("SERIAL-000001").build();
 
@@ -148,20 +148,22 @@ public class ITConfluentKafkaContainerTest {
 
     @Test
     public void consumeMessageAvro() throws Exception {
-        KafkaTestUtils.createTopic(container, "TOPIC_2", 1, false);
+        container.createTopic(new TopicConfiguration("TOPIC_2", 1, false));
 
         /**
          * List des messages reçus
          */
         BlockingQueue<ConsumerRecord<String, WorkstationAvro>> records = new LinkedBlockingQueue<>();
 
-        KafkaMessageListenerContainer<String, ?> listenerContainer = KafkaTestUtils.createListenerContainer(container,
-                "an_junit_group",
-                "TOPIC_2",
-                (MessageListener<String, WorkstationAvro>) record -> records.add(record));
+        ContainerProperties containerProperties = new ContainerProperties("TOPIC_2");
+        containerProperties.setMessageListener((MessageListener<String, WorkstationAvro>) record -> records.add(record));
+        KafkaMessageListenerContainer<String, ?> listenerContainer = new KafkaMessageListenerContainer<>(
+                container.createKafkaAvroConsumerFactory("an_junit_group"),
+                containerProperties);
+        listenerContainer.start();
         ContainerTestUtils.waitForAssignment(listenerContainer, 1);
 
-        KafkaTemplate<String, WorkstationAvro> template = KafkaTestUtils.createKafkaTemplate(container);
+        KafkaTemplate<String, WorkstationAvro> template = container.createKafkaTemplate();
         WorkstationAvro workstation = WorkstationAvro.newBuilder().setId(2L).setName("WS-123456").setSerialNumber("SERIAL-000002").build();
         template.send("TOPIC_2", "WKS-2", workstation);
 

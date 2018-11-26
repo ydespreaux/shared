@@ -18,16 +18,14 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
-        <!-- Spring boot version -->
         <!-- Guava version -->
         <guava.version>20.0</guava.version>
-        <!-- Kafka version -->
-        <kafka.version>1.1.0</kafka.version>
-        <confluent.version>4.1.0</confluent.version>
+        <kafka-connect-cassandra.version>1.1.0</kafka-connect-cassandra.version>
+        <confluent.version>5.0.1</confluent.version>
         <confluent-elasticsearch.version>5.0.0</confluent-elasticsearch.version>
         <avro.version>1.8.2</avro.version>
         <!-- Swagger version -->
-        <swagger.version>2.7.0</swagger.version>
+        <swagger.version>2.9.2</swagger.version>
         <calcite.version>1.2.0-incubating</calcite.version>
         <!-- lib-test-containers version -->
         <lib-testcontainers.version>1.0.0-SNAPSHOT</lib-testcontainers.version>
@@ -59,6 +57,7 @@
         <dependency>
             <groupId> com.google.guava</groupId>
             <artifactId>guava</artifactId>
+            <version>${guava.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.kafka</groupId>
@@ -142,61 +141,6 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>org.apache.kafka</groupId>
-                <artifactId>connect-api</artifactId>
-                <version>${kafka.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.kafka</groupId>
-                <artifactId>connect-file</artifactId>
-                <version>${kafka.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.kafka</groupId>
-                <artifactId>connect-json</artifactId>
-                <version>${kafka.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.kafka</groupId>
-                <artifactId>connect-runtime</artifactId>
-                <version>${kafka.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.kafka</groupId>
-                <artifactId>connect-transforms</artifactId>
-                <version>${kafka.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.kafka</groupId>
-                <artifactId>kafka-clients</artifactId>
-                <version>${kafka.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.kafka</groupId>
-                <artifactId>kafka-log4j-appender</artifactId>
-                <version>${kafka.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.kafka</groupId>
-                <artifactId>kafka-streams</artifactId>
-                <version>${kafka.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.kafka</groupId>
-                <artifactId>kafka-tools</artifactId>
-                <version>${kafka.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.kafka</groupId>
-                <artifactId>kafka_2.11</artifactId>
-                <version>${kafka.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.kafka</groupId>
-                <artifactId>kafka_2.12</artifactId>
-                <version>${kafka.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>io.springfox</groupId>
                 <artifactId>springfox-swagger2</artifactId>
                 <version>${swagger.version}</version>
@@ -205,11 +149,6 @@
                 <groupId>io.springfox</groupId>
                 <artifactId>springfox-swagger-ui</artifactId>
                 <version>${swagger.version}</version>
-            </dependency>
-            <dependency>
-                <groupId> com.google.guava</groupId>
-                <artifactId>guava</artifactId>
-                <version>${guava.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.confluent</groupId>
@@ -244,7 +183,7 @@
             <dependency>
                 <groupId>com.datamountaineer</groupId>
                 <artifactId>kafka-connect-cassandra</artifactId>
-                <version>${kafka.version}</version>
+                <version>${kafka-connect-cassandra.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.calcite</groupId>

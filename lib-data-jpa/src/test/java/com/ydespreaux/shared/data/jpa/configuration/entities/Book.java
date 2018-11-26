@@ -5,7 +5,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "book")
@@ -76,8 +76,7 @@ public class Book implements Serializable {
     private String editor;
 
     @Column(name = "publication")
-    @Temporal(TemporalType.DATE)
-    private Date publication;
+    private LocalDate publication;
 
     @Version
     private Integer version;

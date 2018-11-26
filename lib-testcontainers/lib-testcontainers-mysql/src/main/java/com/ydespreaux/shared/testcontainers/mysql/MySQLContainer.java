@@ -25,6 +25,9 @@ import static java.lang.String.format;
 @Slf4j
 public class MySQLContainer<SELF extends MySQLContainer<SELF>> extends AbstractJdbcContainer<SELF> {
 
+    private static final String DRIVER_CLASS_NAME = "com.mysql.jdbc.Driver";
+    private static final String DRIVER_V8_CLASS_NAME = "com.mysql.cj.jdbc.Driver";
+
     /**
      * Default image name
      */
@@ -40,12 +43,15 @@ public class MySQLContainer<SELF extends MySQLContainer<SELF>> extends AbstractJ
 
     private static final String MYSQL_INIT_DIRECTORY = "/docker-entrypoint-initdb.d";
 
+    private final String driverClassName;
+
     private String rootPassword = UUID.randomUUID().toString();
 
     /**
      * Register springboot properties in environment
      */
     private boolean registerSpringbootProperties = true;
+
 
     /**
      *
@@ -69,6 +75,20 @@ public class MySQLContainer<SELF extends MySQLContainer<SELF>> extends AbstractJ
         this.withUsername("db_user_test");
         this.withPassword(UUID.randomUUID().toString());
         this.withDatabaseName("db_test");
+        this.driverClassName = retrieveDriverClassName();
+    }
+
+    /**
+     *
+     * @return
+     */
+    private String retrieveDriverClassName(){
+        try {
+            Class.forName(DRIVER_V8_CLASS_NAME);
+            return DRIVER_V8_CLASS_NAME;
+        } catch (ClassNotFoundException e) {
+            return DRIVER_CLASS_NAME;
+        }
     }
 
     /**
@@ -103,7 +123,7 @@ public class MySQLContainer<SELF extends MySQLContainer<SELF>> extends AbstractJ
      */
     @Override
     public String getDriverClassName() {
-        return "com.mysql.jdbc.Driver";
+        return this.driverClassName;
     }
 
     /**

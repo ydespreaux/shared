@@ -3,7 +3,7 @@ package com.ydespreaux.shared.data.jpa.configuration.entities;
 import lombok.*;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -24,6 +24,6 @@ public class BookDTO implements Serializable {
     private Double price;
     private String author;
     private String editor;
-    private Date publication;
+    private LocalDate publication;
 
 }

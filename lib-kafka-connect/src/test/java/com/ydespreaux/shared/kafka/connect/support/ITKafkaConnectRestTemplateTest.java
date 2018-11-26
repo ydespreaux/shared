@@ -2,8 +2,8 @@ package com.ydespreaux.shared.kafka.connect.support;
 
 import com.ydespreaux.shared.autoconfigure.kafka.connect.KafkaConnectProperties;
 import com.ydespreaux.shared.kafka.connect.KafkaConnectException;
+import com.ydespreaux.shared.testcontainers.kafka.config.TopicConfiguration;
 import com.ydespreaux.shared.testcontainers.kafka.rule.ConfluentKafkaConnectContainer;
-import com.ydespreaux.shared.testcontainers.kafka.utils.KafkaTestUtils;
 import com.ydespreaux.shared.testcontainers.mysql.MySQLContainer;
 import org.apache.kafka.connect.runtime.AbstractStatus;
 import org.apache.kafka.connect.runtime.rest.entities.*;
@@ -60,7 +60,7 @@ public class ITKafkaConnectRestTemplateTest {
 
     @BeforeClass
     public static void onSetupClass(){
-        KafkaTestUtils.createTopic(kafkaContainer, TOPIC_NAME, 3, true);
+        kafkaContainer.createTopic(new TopicConfiguration(TOPIC_NAME, 3, true));
         template = createKafkaConnectTemplate();
     }
 

@@ -3,8 +3,8 @@ package com.ydespreaux.shared.kafka.connect.support;
 import com.ydespreaux.shared.autoconfigure.kafka.connect.KafkaConnectAutoConfiguration;
 import com.ydespreaux.shared.autoconfigure.kafka.connect.KafkaConnectProperties;
 import com.ydespreaux.shared.kafka.connect.runtime.ConnectEmbedded;
+import com.ydespreaux.shared.testcontainers.kafka.config.TopicConfiguration;
 import com.ydespreaux.shared.testcontainers.kafka.rule.ConfluentKafkaContainer;
-import com.ydespreaux.shared.testcontainers.kafka.utils.KafkaTestUtils;
 import com.ydespreaux.shared.testcontainers.mysql.MySQLContainer;
 import org.apache.kafka.connect.errors.AlreadyExistsException;
 import org.apache.kafka.connect.errors.ConnectException;
@@ -57,7 +57,7 @@ public class ITKafkaConnectEmbeddedTemplateTest {
 
     @BeforeClass
     public static void onSetupClass() throws IOException {
-        KafkaTestUtils.createTopic(kafkaContainer, TOPIC_NAME, 3, true);
+        kafkaContainer.createTopic(new TopicConfiguration(TOPIC_NAME, 3, true));
 
         KafkaConnectProperties properties = new KafkaConnectProperties();
         properties.getCluster().setEmbedded(true);

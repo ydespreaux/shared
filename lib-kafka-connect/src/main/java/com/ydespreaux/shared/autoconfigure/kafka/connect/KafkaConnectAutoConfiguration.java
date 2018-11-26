@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.utils.Time;
 import org.apache.kafka.connect.runtime.Herder;
 import org.apache.kafka.connect.runtime.Worker;
+import org.apache.kafka.connect.runtime.WorkerConfigTransformer;
 import org.apache.kafka.connect.runtime.WorkerInfo;
 import org.apache.kafka.connect.runtime.distributed.DistributedConfig;
 import org.apache.kafka.connect.runtime.distributed.DistributedHerder;
@@ -104,15 +105,15 @@ public class KafkaConnectAutoConfiguration {
             }
 
             String workerId = UUID.randomUUID().toString();
+
             KafkaOffsetBackingStore offsetBackingStore = new KafkaOffsetBackingStore();
             offsetBackingStore.configure(config);
-
             Worker worker = new Worker(workerId, time, plugins, config, offsetBackingStore);
-
-            StatusBackingStore statusBackingStore = new KafkaStatusBackingStore(time, worker.getInternalValueConverter());
+            WorkerConfigTransformer configTransformer = worker.configTransformer();
+            Converter internalValueConverter = worker.getInternalValueConverter();
+            StatusBackingStore statusBackingStore = new KafkaStatusBackingStore(time, internalValueConverter);
             statusBackingStore.configure(config);
-            ConfigBackingStore configBackingStore = new KafkaConfigBackingStore(worker.getInternalValueConverter(), config);
-
+            ConfigBackingStore configBackingStore = new KafkaConfigBackingStore(internalValueConverter, config, configTransformer);
             Herder herder = new DistributedHerder(config, time, worker, kafkaClusterId, statusBackingStore, configBackingStore, "");
             if (log.isInfoEnabled()) {
                 log.info("Kafka Connect distributed worker initialization took {}ms", time.hiResClockMs() - initStart);
