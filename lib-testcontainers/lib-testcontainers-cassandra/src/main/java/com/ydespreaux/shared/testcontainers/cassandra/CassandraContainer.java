@@ -38,7 +38,7 @@ public class CassandraContainer<SELF extends CassandraContainer<SELF>> extends G
     private static final int CASSANDRA_DEFAULT_PORT = 9042;
     private static final int STARTER_TIMOUT_SECONDS = 120;
 
-    private static final String DB_SCHEMA_DIRECTORY = "/tmp/init-schema";
+    private static final String DB_SCHEMA_DIRECTORY = "/tmp/cassandra-init";
     /**
      *
      */

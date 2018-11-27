@@ -1,6 +1,5 @@
 package com.ydespreaux.shared.testcontainers.cassandra;
 
-import com.ydespreaux.shared.testcontainers.cassandra.CassandraContainer;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,13 +16,26 @@ import static org.hamcrest.Matchers.is;
 public class CassandraContainerConfigTest {
 
     @Test
-    public void withCqlScriptDirectory() {
+    public void withCqlScriptDirectoryDbSchema() {
         CassandraContainer container = new CassandraContainer()
                 .withCqlScriptDirectory("db-schema");
         List<String> scripts = container.getCqlScripts();
-        assertThat(scripts.size(), is(equalTo(2)));
-        assertThat(scripts.get(0), is(equalTo("/tmp/init-schema/1-schema.cql")));
-        assertThat(scripts.get(1), is(equalTo("/tmp/init-schema/2-data.cql")));
+        assertThat(scripts.size(), is(equalTo(3)));
+        assertThat(scripts.get(0), is(equalTo("/tmp/cassandra-init/db-schema/1-keyspace/keyspace.cql")));
+        assertThat(scripts.get(1), is(equalTo("/tmp/cassandra-init/db-schema/2-data/data.cql")));
+        assertThat(scripts.get(2), is(equalTo("/tmp/cassandra-init/db-schema/model.cql")));
+    }
+
+    @Test
+    public void withCqlScriptDirectoryScripts() {
+        CassandraContainer container = new CassandraContainer()
+                .withCqlScriptDirectory("scripts/keyspace")
+                .withCqlScriptDirectory("scripts/data");
+        List<String> scripts = container.getCqlScripts();
+        assertThat(scripts.size(), is(equalTo(3)));
+        assertThat(scripts.get(0), is(equalTo("/tmp/cassandra-init/keyspace/ext/ext.cql")));
+        assertThat(scripts.get(1), is(equalTo("/tmp/cassandra-init/keyspace/keyspace.cql")));
+        assertThat(scripts.get(2), is(equalTo("/tmp/cassandra-init/data/data.cql")));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -35,6 +47,6 @@ public class CassandraContainerConfigTest {
     @Test(expected = IllegalArgumentException.class)
     public void withCqlScriptDirectoryWithFileResource() {
         new CassandraContainer()
-                .withCqlScriptDirectory("db-schema/1-schema.cql");
+                .withCqlScriptDirectory("db-schema/1-keyspace/1-schema.cql");
     }
 }

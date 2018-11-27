@@ -28,9 +28,9 @@ Versions
 
 ```xml
 <dependency>
-    <groupId>fr.laposte.an.testcontainers</groupId>
+    <groupId>com.ydespreaux.shared.testcontainers</groupId>
     <artifactId>lib-testcontainers-mysql</artifactId>
-    <version>1.1.1</version>
+    <version>1.0.0</version>
     <scope>test</scope>
 </dependency>
 ```
@@ -148,9 +148,9 @@ public class ITMySQLTest {
 
 ```xml
 <dependency>
-    <groupId>fr.laposte.an.testcontainers</groupId>
+    <groupId>com.ydespreaux.shared.testcontainers</groupId>
     <artifactId>lib-testcontainers-cassandra</artifactId>
-    <version>1.1.1</version>
+    <version>1.0.0</version>
     <scope>test</scope>
 </dependency>
 ```
@@ -214,9 +214,9 @@ Cette fonctionnalité est disponible à partir de la version 1.0.2 de la librair
 
 ```xml
 <dependency>
-    <groupId>fr.laposte.an.testcontainers</groupId>
+    <groupId>com.ydespreaux.shared.testcontainers</groupId>
     <artifactId>lib-testcontainers-elasticsearch</artifactId>
-    <version>1.1.1</version>
+    <version>1.0.0</version>
     <scope>test</scope>
 </dependency>
 ```
@@ -263,9 +263,9 @@ Le nom des propriétés spring boot peuvent être modifiées à l'aide des méth
 
 ```xml
 <dependency>
-    <groupId>fr.laposte.an.testcontainers</groupId>
+    <groupId>com.ydespreaux.shared.testcontainers</groupId>
     <artifactId>lib-testcontainers-kafka</artifactId>
-    <version>1.1.1</version>
+    <version>1.0.0</version>
     <scope>test</scope>
 </dependency>
 ```

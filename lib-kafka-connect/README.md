@@ -26,7 +26,7 @@ Versions
 
 ```xml
 <dependency>
-    <groupId>fr.laposte.an.kafka</groupId>
+    <groupId>com.ydespreaux.shared.kafka</groupId>
     <artifactId>lib-kafka-connect</artifactId>
     <version>1.0.0</version>
 </dependency>

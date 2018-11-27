@@ -14,10 +14,10 @@
 	<logger name="org.apache.kafka.connect" level="OFF"/>
 	<logger name="io.confluent.connect.jdbc" level="OFF"/>
 
-	<logger name="fr.laposte.an.testcontainers" level="INFO"/>
+	<logger name="com.ydespreaux.shared.testcontainers" level="INFO"/>
 
 	<logger name="com.ydespreaux.shared.autoconfigure.kafka.connect" level="INFO"/>
-	<logger name="fr.laposte.an.kafka.connect" level="INFO"/>
+	<logger name="com.ydespreaux.shared.kafka.connect" level="INFO"/>
 
 	<root level="ERROR">
 		<appender-ref ref="CONSOLE"/>

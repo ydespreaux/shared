@@ -128,7 +128,7 @@ public class ITKafkaConnectEmbeddedRestApiTest {
         mockMvc.perform(get(kafkaConnectProperties.getContextPath()))
                 .andExpect(status().isOk())
                 .andExpect(content().string(is(notNullValue())))
-                .andExpect(jsonPath("version").value("1.1.0"))
+                .andExpect(jsonPath("version").value("2.0.0"))
                 .andExpect(jsonPath("commit").isNotEmpty())
                 .andExpect(jsonPath("kafka_cluster_id").isNotEmpty());
     }

@@ -17,7 +17,7 @@
     <logger name="io.confluent.testcontainers" level="INFO"/>
 
     <!--<logger name="com.yammer.metrics.reporting" level="OFF"/>-->
-    <logger name="fr.laposte.an.testcontainers.kafka" level="INFO"/>
+    <logger name="com.ydespreaux.shared.testcontainers.kafka" level="INFO"/>
     <root level="INFO">
         <appender-ref ref="CONSOLE"/>
     </root>
