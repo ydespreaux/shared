@@ -1,0 +1,29 @@
+# Configuration topics Kafka
+spring:
+  kafka:
+    bootstrap-servers: localhost:9093
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
+    consumer:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
+      maxPollRecords: 10
+      enable-auto-commit: true
+    listener:
+      poll-timeout: 60000
+    extra:
+      security-protocol: PLAINTEXT
+      schema-registry: http://localhost:8081
+      applicationId: kstreamId
+      topics:
+        topic-admin:
+          name: an_dev_admin_priv_v1
+          consumer:
+            concurrency: 5
+        topic-simple-tweet:
+          name: an_dev_simpletweet_priv_v1
+          consumer:
+            concurrency: 9
+            maxPollRecords: 100
+            batch-listener: true

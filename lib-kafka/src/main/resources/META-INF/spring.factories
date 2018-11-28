@@ -1,0 +1,3 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.ydespreaux.shared.autoconfigure.kafka.actuator.KafkaHealthIndicatorAutoConfiguration,\
+com.ydespreaux.shared.autoconfigure.kafka.actuator.KafkaStreamHealthIndicatorAutoConfiguration

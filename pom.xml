@@ -22,12 +22,13 @@
         <version>2.1.0.RELEASE</version>
     </parent>
     <modules>
+        <module>lib-testcontainers</module>
         <module>lib-commons</module>
         <module>lib-data-commons</module>
         <module>lib-data-jpa</module>
         <module>lib-data-elasticsearch</module>
+        <module>lib-kafka</module>
         <module>lib-kafka-connect</module>
-        <module>lib-testcontainers</module>
     </modules>
     <dependencies>
         <dependency>
