@@ -4,14 +4,19 @@ import com.ydespreaux.shared.testcontainers.common.jdbc.AbstractJdbcContainer;
 import lombok.extern.slf4j.Slf4j;
 import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.Network;
+import org.testcontainers.shaded.org.apache.commons.io.FilenameUtils;
 import org.testcontainers.utility.MountableFile;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Stream;
 
 import static com.ydespreaux.shared.testcontainers.common.utils.ContainerUtils.containerLogsConsumer;
 import static java.lang.String.format;
@@ -43,8 +48,6 @@ public class MySQLContainer<SELF extends MySQLContainer<SELF>> extends AbstractJ
 
     private static final String MYSQL_INIT_DIRECTORY = "/docker-entrypoint-initdb.d";
 
-    private final String driverClassName;
-
     private String rootPassword = UUID.randomUUID().toString();
 
     /**
@@ -52,6 +55,12 @@ public class MySQLContainer<SELF extends MySQLContainer<SELF>> extends AbstractJ
      */
     private boolean registerSpringbootProperties = true;
 
+    private String driverClassName;
+
+    /**
+     *
+     */
+    private AtomicInteger counterFile = new AtomicInteger(0);
 
     /**
      *
@@ -90,7 +99,6 @@ public class MySQLContainer<SELF extends MySQLContainer<SELF>> extends AbstractJ
             return DRIVER_CLASS_NAME;
         }
     }
-
     /**
      * Get the numbers port for the liveness check.
      * @return
@@ -208,11 +216,11 @@ public class MySQLContainer<SELF extends MySQLContainer<SELF>> extends AbstractJ
     }
 
     /**
-     * Set the sql file script
+     * Add the sql file script
      * @param sqlInit
      * @return
      */
-    public SELF withMySqlInit(String sqlInit) {
+    public SELF withSqlScriptFile(String sqlInit) {
         if (sqlInit == null) {
             return this.self();
         }
@@ -226,34 +234,65 @@ public class MySQLContainer<SELF extends MySQLContainer<SELF>> extends AbstractJ
             throw new IllegalArgumentException(format("Resource with path %s must be a file", scriptsDir.toString()));
         }
         // Create the volume that will be need for scripts
-        this.addFileSystemBind(mountableFile.getResolvedPath(), MYSQL_INIT_DIRECTORY + "/" + scriptsDir.getFileName(), BindMode.READ_ONLY);
+        this.addFileSystemBind(mountableFile.getResolvedPath(), MYSQL_INIT_DIRECTORY + "/" + generateFile(scriptsDir), BindMode.READ_ONLY);
         return this.self();
     }
 
     /**
-     * Set the directory sql files.
+     * Add the scripts directory.
      *
      * @param directory
      * @return
      */
-    public SELF withMySqlInitDirectory(String directory) {
+    public SELF withSqlScriptDirectory(String directory) {
         if (directory == null) {
             return this.self();
         }
         MountableFile mountableFile = MountableFile.forClasspathResource(directory);
         Path scriptsDir = Paths.get(mountableFile.getResolvedPath());
-        File toFile = scriptsDir.toFile();
-        if (!toFile.exists()) {
+        File scriptFile = scriptsDir.toFile();
+        if (!scriptFile.exists()) {
             throw new IllegalArgumentException(format("Resource with path %s could not be found", scriptsDir.toString()));
         }
-        if (toFile.isFile()) {
+        if (scriptFile.isFile()) {
             throw new IllegalArgumentException(format("Resource with path %s must be a directory", scriptsDir.toString()));
         }
-        // Create the volume that will be need for scripts
-        this.addFileSystemBind(mountableFile.getResolvedPath(), MYSQL_INIT_DIRECTORY, BindMode.READ_ONLY);
+        // Add all scripts in cqlScripts attribute
+        scanScripts(scriptsDir);
         return this.self();
     }
 
+    /**
+     * Scan all files and sub directory
+     * @param scriptDirectory
+     */
+    private void scanScripts(Path scriptDirectory) {
+        try (Stream<Path> paths = Files.list(scriptDirectory)){
+            paths
+                    .filter(path -> path.toFile().isDirectory() || FilenameUtils.getExtension(path.toFile().getName()) .equals("sql"))
+                    .sorted()
+                    .forEach(path -> {
+                        if (path.toFile().isFile()) {
+                            MountableFile mountableFile = MountableFile.forHostPath(path);
+                            // Create the volume that will be need for scripts
+                            this.addFileSystemBind(mountableFile.getResolvedPath(), MYSQL_INIT_DIRECTORY + '/' + generateFile(path), BindMode.READ_ONLY);
+                        }else {
+                            scanScripts(path);
+                        }
+                    });
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Error listing scripts", e);
+        }
+    }
+
+    /**
+     * Generate a file name with counter
+     * @param path
+     * @return
+     */
+    private String generateFile(Path path) {
+        return counterFile.incrementAndGet() + "_" + path.getFileName();
+    }
 
     /**
      * Register all properties

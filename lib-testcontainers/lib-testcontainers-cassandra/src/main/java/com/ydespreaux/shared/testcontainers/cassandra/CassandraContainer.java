@@ -1,16 +1,15 @@
 package com.ydespreaux.shared.testcontainers.cassandra;
 
-import com.datastax.driver.core.Cluster;
-import com.datastax.driver.core.Session;
 import com.ydespreaux.shared.testcontainers.common.IContainer;
+import com.ydespreaux.shared.testcontainers.common.checks.AbstractCommandWaitStrategy;
 import com.ydespreaux.shared.testcontainers.common.utils.ContainerUtils;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.rnorth.ducttape.unreliables.Unreliables;
 import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.ContainerLaunchException;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
+import org.testcontainers.shaded.org.apache.commons.io.FilenameUtils;
 import org.testcontainers.utility.MountableFile;
 
 import java.io.File;
@@ -18,8 +17,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 import static com.ydespreaux.shared.testcontainers.common.utils.ContainerUtils.containerLogsConsumer;
@@ -94,6 +93,7 @@ public class CassandraContainer<SELF extends CassandraContainer<SELF>> extends G
         this.withLogConsumer(containerLogsConsumer(log))
                 .withExposedPorts(CASSANDRA_DEFAULT_PORT)
                 .withCreateContainerCmdModifier(createContainerCmd -> createContainerCmd.withName("testcontainsers-cassandra-" + UUID.randomUUID()));
+        this.waitingFor(new CassandraWaitStrategy(this).withStartupTimeout(Duration.ofSeconds(this.getStartupTimeoutSeconds())));
     }
 
     /**
@@ -209,7 +209,9 @@ public class CassandraContainer<SELF extends CassandraContainer<SELF>> extends G
      */
     private void scanScriptsImpl(Path rootDirectory, Path scriptDirectory) {
         try (Stream<Path> paths = Files.list(scriptDirectory)){
-            paths.sorted()
+            paths
+                    .filter(path -> path.toFile().isDirectory() || FilenameUtils.getExtension(path.toFile().getName()) .equals("cql"))
+                    .sorted()
                     .forEach(path -> {
                         if (path.toFile().isFile()) {
                             String subPath = path.subpath(rootDirectory.getNameCount(), path.getNameCount()).toString().replaceAll("\\\\", "/");
@@ -241,40 +243,6 @@ public class CassandraContainer<SELF extends CassandraContainer<SELF>> extends G
      */
     public Integer getCQLNativeTransportPort() {
         return this.getMappedPort(CASSANDRA_DEFAULT_PORT);
-    }
-
-    /**
-     *
-     */
-    @Override
-    protected void waitUntilContainerStarted() {
-        this.logger().info("Waiting for cassandra connection to become available at {}:{}", this.getContainerIpAddress(), this.getMappedPort(CASSANDRA_DEFAULT_PORT));
-        Unreliables.retryUntilSuccess(getStartupTimeoutSeconds(), TimeUnit.SECONDS, () -> {
-            if (!this.isRunning()) {
-                throw new ContainerLaunchException("Container failed to start");
-            } else {
-
-                Cluster cluster = null;
-                Session session = null;
-                try {
-                    cluster = Cluster.builder()
-                            .addContactPoint(this.getContainerIpAddress())
-                            .withPort(this.getMappedPort(9042))
-                            .build();
-
-                    session = cluster.connect();
-                    this.logger().info("Obtained a connection to container ({}:{})", this.getContainerIpAddress(), this.getMappedPort(CASSANDRA_DEFAULT_PORT));
-                } finally {
-                    if (session != null) {
-                        session.close();
-                    }
-                    if (cluster != null) {
-                        cluster.close();
-                    }
-                }
-                return null;
-            }
-        });
     }
 
     /**
@@ -320,6 +288,29 @@ public class CassandraContainer<SELF extends CassandraContainer<SELF>> extends G
      */
     public Integer getInternalCQLNativeTransportPort() {
         return CASSANDRA_DEFAULT_PORT;
+    }
+
+    private static class CassandraWaitStrategy extends AbstractCommandWaitStrategy {
+
+        /**
+         * Default constructor.
+         *
+         * @param container
+         */
+        public CassandraWaitStrategy(GenericContainer container) {
+            super(container);
+        }
+
+        /**
+         * Returns the schell command that must be executed.
+         *
+         * @return
+         */
+        @Override
+        public String[] getCheckCommand() {
+            return new String[]{"cqlsh", "-e", "SELECT release_version FROM system.local"};
+        }
+
     }
 
 }

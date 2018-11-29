@@ -1,6 +1,5 @@
 package com.ydespreaux.shared.testcontainers.mysql;
 
-import com.ydespreaux.shared.testcontainers.mysql.MySQLContainer;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -20,7 +19,9 @@ public class ITMySQLContainerWithInitSchemaDirectoryTest {
     @ClassRule
     public static MySQLContainer mySqlContainer = new MySQLContainer()
             .withDatabaseName("an_springboot_aa")
-            .withMySqlInitDirectory("mysql-directory");
+            .withSqlScriptDirectory("mysql-directory/schema")
+            .withSqlScriptDirectory("mysql-directory/data")
+            ;
 
     private Connection connection;
     private Statement statement;

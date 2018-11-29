@@ -1,6 +1,5 @@
 package com.ydespreaux.shared.testcontainers.mysql;
 
-import com.ydespreaux.shared.testcontainers.mysql.MySQLContainer;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -20,8 +19,8 @@ public class ITMySQLContainerWithInitSchemaFileTest {
     @ClassRule
     public static MySQLContainer mySqlContainer = new MySQLContainer()
             .withDatabaseName("an_springboot_aa")
-            .withMySqlInit("mysql-init/user-schema-init.sql")
-            .withMySqlInit("mysql-init/workstation-schema-init.sql");
+            .withSqlScriptFile("mysql-init/user-schema-init.sql")
+            .withSqlScriptFile("mysql-init/workstation-schema-init.sql");
 
     private Connection connection;
     private Statement statement;
