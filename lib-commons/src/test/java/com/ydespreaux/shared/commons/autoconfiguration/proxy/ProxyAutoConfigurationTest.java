@@ -8,7 +8,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 @DirtiesContext
 @RunWith(SpringRunner.class)
@@ -17,6 +17,6 @@ public class ProxyAutoConfigurationTest {
 
     @Test
     public void loadContext(){
-        assertThat(System.getProperty("http.proxyHost"), is(equalTo("proxy-internet.net-courrier.extra.laposte.fr")));
+        assertThat(System.getProperty("http.proxyHost"), is(equalTo("my-proxy.fr")));
     }
 }

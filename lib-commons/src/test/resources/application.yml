@@ -1,10 +1,10 @@
 server:
   proxy:
     enabled: true
-    url: proxy-internet.net-courrier.extra.laposte.fr
+    url: my-proxy.fr
     port: 8080
-    username: xpax624
-    password: h3R(y5A%23
+    username: username
+    password: mysecret
 ---
 spring:
   profiles: noproxy
