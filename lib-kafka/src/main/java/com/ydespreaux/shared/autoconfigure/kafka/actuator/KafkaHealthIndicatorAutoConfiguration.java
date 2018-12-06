@@ -1,6 +1,6 @@
 package com.ydespreaux.shared.autoconfigure.kafka.actuator;
 
-import com.ydespreaux.shared.autoconfigure.kafka.KafkaExtraProperties;
+import com.ydespreaux.shared.kafka.clients.ConfluentClientConfig;
 import org.apache.kafka.clients.KafkaClient;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.DescribeClusterResult;
@@ -16,7 +16,6 @@ import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.util.StringUtils;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -31,12 +30,12 @@ public class KafkaHealthIndicatorAutoConfiguration {
     @Configuration
     @ConditionalOnClass({KafkaClient.class})
     @ConditionalOnEnabledHealthIndicator("kafka")
-    @EnableConfigurationProperties(KafkaExtraProperties.class)
+    @EnableConfigurationProperties(KafkaProperties.class)
     public static class KafkaHealthIndicatorConfiguration {
 
-        private final KafkaExtraProperties config;
+        private final KafkaProperties config;
 
-        public KafkaHealthIndicatorConfiguration(KafkaExtraProperties config) {
+        public KafkaHealthIndicatorConfiguration(KafkaProperties config) {
             this.config = config;
         }
 
@@ -44,9 +43,9 @@ public class KafkaHealthIndicatorAutoConfiguration {
         public HealthIndicator kafka(){
             OrderedHealthAggregator healthAggregator = new OrderedHealthAggregator();
             Map<String, HealthIndicator> indicators = new LinkedHashMap<>();
-            indicators.put("Cluster Kafka", new KafkaClientHealthIndicator(config.getKafkaProperties()));
-            if (!StringUtils.isEmpty(config.getSchemaRegistry())) {
-                indicators.put("Schema Registry", new RemoteConnectionHealthIndicator(config.getSchemaRegistry()));
+            indicators.put("Cluster Kafka", new KafkaClientHealthIndicator(config));
+            if (config.getProperties().containsKey(ConfluentClientConfig.SCHEMA_REGISTRY_CONFIG)) {
+                indicators.put("Schema Registry", new RemoteConnectionHealthIndicator(config.getProperties().get(ConfluentClientConfig.SCHEMA_REGISTRY_CONFIG)));
             }
             return new CompositeHealthIndicator(healthAggregator, indicators);
         }

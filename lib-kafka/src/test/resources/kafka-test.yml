@@ -12,18 +12,6 @@ spring:
       enable-auto-commit: true
     listener:
       poll-timeout: 60000
-    extra:
-      security-protocol: PLAINTEXT
-      schema-registry: http://localhost:8081
-      applicationId: kstreamId
-      topics:
-        topic-admin:
-          name: an_dev_admin_priv_v1
-          consumer:
-            concurrency: 5
-        topic-simple-tweet:
-          name: an_dev_simpletweet_priv_v1
-          consumer:
-            concurrency: 9
-            maxPollRecords: 100
-            batch-listener: true
+    properties:
+      security.protocol: PLAINTEXT
+      schema.registry: http://localhost:8081
