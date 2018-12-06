@@ -3,10 +3,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.ydespreaux.shared.testcontainers</groupId>
-    <artifactId>lib-testcontainers-build</artifactId>
+    <artifactId>lib-testcontainers</artifactId>
     <version>1.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <name>lib-testcontainers-build</name>
+    <name>lib-testcontainers</name>
 
     <parent>
         <groupId>com.ydespreaux.shared</groupId>

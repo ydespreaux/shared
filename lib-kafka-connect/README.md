@@ -11,16 +11,14 @@ Cette librairie permet de:
 - Embarquer un cluster Kafka-Connect fonctionnant en mode autonome ou en mode distribué
 - Définit un endpoint pour actuator permettant de vérifier l'état du cluster et le statut des connecteurs
 
-L'article [Librairie Kafka Connect avec Spring Boot 2.x](https://wiki.net-courrier.extra.laposte.fr/confluence/display/CDJAVA/Librairie+Kafka+Connect+avec+Spring+Boot+2.x) décrit l'utilisation et la configuration de la librairie.
-
 
 Versions
 -----------
 
-|   lib-kafka-connect | SpringBoot  |   Kafka   |   Confluent   |   Dépôt Nexus                                  |
-|:-------------------:|:-----------:|:---------:|:-------------:|-----------------------------------------------:|
-|   1.0.1             | 2.x         |   1.1.0   |   4.1.0       |   http://nexus2.net-courrier.extra.laposte.fr  |
-|   1.0.0             | 2.x         |   1.1.0   |   4.1.0       |   http://nexus2.net-courrier.extra.laposte.fr  |
+|   lib-kafka-connect | SpringBoot  |   Kafka   |   Confluent   |
+|:-------------------:|:-----------:|:---------:|:-------------:|
+|   1.0.1             | 2.x         |   1.1.0   |   4.1.0       |
+|   1.0.0             | 2.x         |   1.1.0   |   4.1.0       |
 
 ## Add the Maven dependency
 
