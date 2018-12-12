@@ -1,7 +1,5 @@
 package com.ydespreaux.shared.data.elasticsearch.mapping;
 
-import java.util.Optional;
-
 /**
  * @param <T>
  * @author xpax624
@@ -40,14 +38,21 @@ public interface ElasticsearchPersistentEntity<T> {
      * @param entity
      * @param version
      */
-    void setPersistentEntityVersion(T entity, Integer version);
+    void setPersistentEntityVersion(T entity, Long version);
 
     /**
      *
      * @param entity
      * @return
      */
-    Optional<String> getPersistentEntityId(T entity);
+    String getPersistentEntityId(T entity);
+
+    /**
+     *
+     * @param source
+     * @return
+     */
+    Long getPersistentEntityVersion(T source);
 
     /**
      *
@@ -66,4 +71,5 @@ public interface ElasticsearchPersistentEntity<T> {
      * @return
      */
     String getIndexPath();
+
 }

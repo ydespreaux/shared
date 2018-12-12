@@ -1,9 +1,9 @@
 package com.ydespreaux.shared.data.elasticsearch.entities;
 
 import com.ydespreaux.shared.data.elasticsearch.annotations.Document;
-import io.searchbox.annotations.JestId;
-import io.searchbox.annotations.JestVersion;
 import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Version;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -17,10 +17,10 @@ import java.time.LocalDateTime;
 @Document(aliasOrIndex = "books", type = "book", indexPath = "classpath:indices/book.index")
 public class Book {
 
-    @JestId
+    @Id
     private String documentId;
-    @JestVersion
-    private Integer version;
+    @Version
+    private Long version;
     private String title;
     private String description;
     private Double price;
