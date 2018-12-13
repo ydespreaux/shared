@@ -2,7 +2,7 @@ package com.ydespreaux.shared.data.elasticsearch.annotations;
 
 
 
-import com.ydespreaux.shared.data.elasticsearch.mapping.IndexTimeBasedSupport;
+import com.ydespreaux.shared.data.elasticsearch.core.IndexTimeBasedSupport;
 
 import java.lang.annotation.*;
 

@@ -1,9 +1,9 @@
 package com.ydespreaux.shared.data.elasticsearch;
 
-import com.ydespreaux.shared.data.elasticsearch.support.ITArticleRepositoryContextTest;
-import com.ydespreaux.shared.data.elasticsearch.support.ITArticleRepositoryTest;
-import com.ydespreaux.shared.data.elasticsearch.support.ITBookRepositoryContextTest;
-import com.ydespreaux.shared.data.elasticsearch.support.ITBookRepositoryTest;
+import com.ydespreaux.shared.data.elasticsearch.repository.support.ITArticleRepositoryContextTest;
+import com.ydespreaux.shared.data.elasticsearch.repository.support.ITArticleRepositoryTest;
+import com.ydespreaux.shared.data.elasticsearch.repository.support.ITBookRepositoryContextTest;
+import com.ydespreaux.shared.data.elasticsearch.repository.support.ITBookRepositoryTest;
 import com.ydespreaux.shared.testcontainers.elasticsearch.ElasticsearchContainer;
 import org.junit.ClassRule;
 import org.junit.runner.RunWith;
