@@ -1,16 +1,16 @@
-package com.ydespreaux.shared.data.elasticsearch.adapter;
+package com.ydespreaux.shared.data.elasticsearch.core.converter.adapter;
 
 import com.google.gson.*;
 
 import java.lang.reflect.Type;
-import java.time.Instant;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
-public class InstantTypeAdapter implements JsonSerializer<Instant>, JsonDeserializer<Instant> {
+public class LocalTimeTypeAdapter implements JsonSerializer<LocalTime>, JsonDeserializer<LocalTime> {
     /**
      * Formatter.
      */
-    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ISO_INSTANT;
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ISO_LOCAL_TIME;
 
     /**
      * Gson invokes this call-back method during serialization when it encounters a field of the
@@ -27,7 +27,7 @@ public class InstantTypeAdapter implements JsonSerializer<Instant>, JsonDeserial
      * @return a JsonElement corresponding to the specified object.
      */
     @Override
-    public JsonElement serialize(Instant src, Type typeOfSrc, JsonSerializationContext context) {
+    public JsonElement serialize(LocalTime src, Type typeOfSrc, JsonSerializationContext context) {
         return new JsonPrimitive(FORMATTER.format(src));
     }
 
@@ -47,7 +47,8 @@ public class InstantTypeAdapter implements JsonSerializer<Instant>, JsonDeserial
      * @throws JsonParseException if json is not in the expected format of {@code typeOfT}
      */
     @Override
-    public Instant deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-        return FORMATTER.parse(json.getAsString(), Instant::from);
+    public LocalTime deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+            throws JsonParseException {
+        return FORMATTER.parse(json.getAsString(), LocalTime::from);
     }
 }

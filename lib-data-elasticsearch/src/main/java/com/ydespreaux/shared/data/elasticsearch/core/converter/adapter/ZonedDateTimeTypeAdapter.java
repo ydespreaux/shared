@@ -1,16 +1,16 @@
-package com.ydespreaux.shared.data.elasticsearch.adapter;
+package com.ydespreaux.shared.data.elasticsearch.core.converter.adapter;
 
 import com.google.gson.*;
 
 import java.lang.reflect.Type;
-import java.time.OffsetTime;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class OffsetTimeTypeAdapter implements JsonSerializer<OffsetTime>, JsonDeserializer<OffsetTime> {
+public class ZonedDateTimeTypeAdapter implements JsonSerializer<ZonedDateTime>, JsonDeserializer<ZonedDateTime> {
     /**
      * Formatter.
      */
-    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ISO_OFFSET_TIME;
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ISO_DATE_TIME;
 
     /**
      * Gson invokes this call-back method during serialization when it encounters a field of the
@@ -27,7 +27,7 @@ public class OffsetTimeTypeAdapter implements JsonSerializer<OffsetTime>, JsonDe
      * @return a JsonElement corresponding to the specified object.
      */
     @Override
-    public JsonElement serialize(OffsetTime src, Type typeOfSrc, JsonSerializationContext context) {
+    public JsonElement serialize(ZonedDateTime src, Type typeOfSrc, JsonSerializationContext context) {
         return new JsonPrimitive(FORMATTER.format(src));
     }
 
@@ -47,8 +47,8 @@ public class OffsetTimeTypeAdapter implements JsonSerializer<OffsetTime>, JsonDe
      * @throws JsonParseException if json is not in the expected format of {@code typeOfT}
      */
     @Override
-    public OffsetTime deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+    public ZonedDateTime deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
             throws JsonParseException {
-        return FORMATTER.parse(json.getAsString(), OffsetTime::from);
+        return FORMATTER.parse(json.getAsString(), ZonedDateTime::from);
     }
 }

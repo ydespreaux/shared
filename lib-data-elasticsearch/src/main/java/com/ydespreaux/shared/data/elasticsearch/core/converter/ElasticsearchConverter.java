@@ -13,7 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ydespreaux.shared.data.elasticsearch.mapping;
+package com.ydespreaux.shared.data.elasticsearch.core.converter;
+
+import com.ydespreaux.shared.data.elasticsearch.core.mapping.ElasticsearchPersistentEntity;
+import com.ydespreaux.shared.data.elasticsearch.core.mapping.ElasticsearchPersistentProperty;
+import org.springframework.data.mapping.context.MappingContext;
 
 /**
  * ElasticsearchConverter
@@ -26,4 +30,11 @@ public interface ElasticsearchConverter {
      * @return an {@link ElasticsearchPersistentEntity} of T.
      */
     <T> ElasticsearchPersistentEntity<T> getRequiredPersistentEntity(Class<T> clazz);
+
+    /**
+     * Returns the underlying {@link org.springframework.data.mapping.context.MappingContext} used by the converter.
+     *
+     * @return never {@literal null}
+     */
+    MappingContext<? extends ElasticsearchPersistentEntity<?>, ElasticsearchPersistentProperty> getMappingContext();
 }

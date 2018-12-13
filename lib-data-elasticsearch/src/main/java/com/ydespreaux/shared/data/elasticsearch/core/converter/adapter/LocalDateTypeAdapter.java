@@ -1,4 +1,4 @@
-package com.ydespreaux.shared.data.elasticsearch.adapter;
+package com.ydespreaux.shared.data.elasticsearch.core.converter.adapter;
 
 
 import com.google.gson.*;
