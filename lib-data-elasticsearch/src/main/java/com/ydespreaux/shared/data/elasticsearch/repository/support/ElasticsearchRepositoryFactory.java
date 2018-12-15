@@ -18,7 +18,6 @@ package com.ydespreaux.shared.data.elasticsearch.repository.support;
 import com.ydespreaux.shared.data.elasticsearch.core.ElasticsearchOperations;
 import com.ydespreaux.shared.data.elasticsearch.repository.ElasticsearchRepository;
 import com.ydespreaux.shared.data.elasticsearch.repository.SimpleElasticsearchRepository;
-import org.springframework.data.repository.core.EntityInformation;
 import org.springframework.data.repository.core.RepositoryInformation;
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.repository.core.support.RepositoryFactorySupport;
@@ -46,8 +45,8 @@ public class ElasticsearchRepositoryFactory extends RepositoryFactorySupport {
 	}
 
 	@Override
-	public <T, ID> EntityInformation<T, ID> getEntityInformation(Class<T> domainClass) {
-		return (EntityInformation<T, ID>)this.elasticsearchOperations.getElasticsearchConverter().getRequiredPersistentEntity(domainClass);
+	public <T, ID> ElasticsearchEntityInformation<T, ID> getEntityInformation(Class<T> domainClass) {
+		return (ElasticsearchEntityInformation<T, ID>) this.elasticsearchOperations.getElasticsearchConverter().getRequiredPersistentEntity(domainClass);
 	}
 
 	@Override

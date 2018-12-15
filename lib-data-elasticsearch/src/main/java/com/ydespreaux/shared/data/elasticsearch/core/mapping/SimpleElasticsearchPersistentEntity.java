@@ -98,7 +98,7 @@ public class SimpleElasticsearchPersistentEntity<T> extends BasicPersistentEntit
      * @return
      */
     @Override
-    public String getIndex(T source) {
+    public String getIndexName(T source) {
         if (isIndexTimeBased()) {
             return this.indexSupport.buildIndex(IndexTimeBasedParameter.of(indexPattern, new Date(), source));
         }
