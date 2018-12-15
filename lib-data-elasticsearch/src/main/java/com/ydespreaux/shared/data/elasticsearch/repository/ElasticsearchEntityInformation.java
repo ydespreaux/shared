@@ -1,4 +1,4 @@
-package com.ydespreaux.shared.data.elasticsearch.repository.support;
+package com.ydespreaux.shared.data.elasticsearch.repository;
 
 import org.springframework.data.repository.core.EntityInformation;
 

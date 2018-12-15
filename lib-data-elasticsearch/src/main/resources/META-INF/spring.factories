@@ -1,2 +1,2 @@
-org.springframework.data.repository.core.support.RepositoryFactorySupport=com.ydespreaux.shared.data.elasticsearch.repository.support.ElasticsearchRepositoryFactory
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=com.ydespreaux.shared.data.autoconfigure.elasticsearch.ElasticsearchDataAutoConfiguration
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.ydespreaux.shared.data.autoconfigure.elasticsearch.ElasticsearchDataAutoConfiguration

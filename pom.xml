@@ -13,6 +13,7 @@
         <java.version>1.8</java.version>
         <logstash-encoder.version>5.0</logstash-encoder.version>
         <apache.commons.io.version>2.6</apache.commons.io.version>
+        <apache.commons.lang.version>2.6</apache.commons.lang.version>
         <maven-surefire-plugin.version>2.22.0</maven-surefire-plugin.version>
         <maven-failsafe-plugin.version>2.22.0</maven-failsafe-plugin.version>
     </properties>
@@ -27,6 +28,7 @@
         <module>lib-data-commons</module>
         <module>lib-data-jpa</module>
         <module>lib-data-elasticsearch</module>
+        <module>lib-data-elasticsearch-rest</module>
         <module>lib-kafka</module>
         <module>lib-kafka-connect</module>
     </modules>
@@ -42,6 +44,13 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- APACHE -->
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>${apache.commons.lang.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

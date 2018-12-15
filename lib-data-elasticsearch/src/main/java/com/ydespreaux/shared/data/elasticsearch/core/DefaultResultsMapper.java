@@ -119,6 +119,7 @@ public class DefaultResultsMapper implements ResultsMapper {
 		if (entity != null) {
 			setPersistentEntityId(entity, searchHit.getId(), type);
 			setPersistentEntityVersion(entity, searchHit.getVersion(), type);
+			setPersistentEntityScore(entity, searchHit.getScore(), type);
 		}
 		return entity;
 	}
@@ -159,6 +160,7 @@ public class DefaultResultsMapper implements ResultsMapper {
 				}
 				setPersistentEntityId(result, hit.getId(), clazz);
 				setPersistentEntityVersion(result, hit.getVersion(), clazz);
+				setPersistentEntityScore(result, hit.getScore(), clazz);
 				results.add(result);
 			}
 		}
@@ -233,6 +235,17 @@ public class DefaultResultsMapper implements ResultsMapper {
 	 */
 	private <T> void setPersistentEntityId(T result, String id, Class<T> clazz) {
 		this.converter.getRequiredPersistentEntity(clazz).setPersistentEntityId(result, id);
+	}
+
+	/**
+	 *
+	 * @param result
+	 * @param score
+	 * @param clazz
+	 * @param <T>
+	 */
+	private <T> void setPersistentEntityScore(T result, float score, Class<T> clazz) {
+		this.converter.getRequiredPersistentEntity(clazz).setPersistentEntityScore(result, score);
 	}
 
 }

@@ -10,6 +10,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.env.Environment;
+import org.springframework.data.mapping.MappingException;
 import org.springframework.data.mapping.model.BasicPersistentEntity;
 import org.springframework.data.util.TypeInformation;
 import org.springframework.util.StringUtils;
@@ -33,6 +34,8 @@ public class SimpleElasticsearchPersistentEntity<T> extends BasicPersistentEntit
     private Boolean createIndex;
     private Boolean indexTimeBased;
     private String indexPath;
+    private ElasticsearchPersistentProperty parentIdProperty;
+    private ElasticsearchPersistentProperty scoreProperty;
 
     /**
      *
@@ -61,21 +64,33 @@ public class SimpleElasticsearchPersistentEntity<T> extends BasicPersistentEntit
         } catch (Exception e) {
             throw new ElasticsearchException(e);
         }
+    }
 
-//        List<Field> fields = FieldUtils.getAllFieldsList(this.entityClass);
-//        for (Field field : fields) {
-//            if (field.isAnnotationPresent(Id.class)) {
-//                field.setAccessible(true);
-//                this.idProperty = field;
-//            } else if (field.isAnnotationPresent(Version.class)) {
-//                field.setAccessible(true);
-//                this.versionProperty = field;
-//            }
-//            if (this.idProperty != null && this.versionProperty != null) {
-//                break;
-//            }
-//        }
+    @Override
+    public void addPersistentProperty(ElasticsearchPersistentProperty property) {
+        super.addPersistentProperty(property);
+        if (property.isParentProperty()) {
+            ElasticsearchPersistentProperty parentProperty = this.parentIdProperty;
 
+            if (parentProperty != null) {
+                throw new MappingException(
+                        String.format("Attempt to add parent property %s but already have property %s registered "
+                                + "as parent property. Check your mapping configuration!", property.getField(), parentProperty.getField()));
+            }
+            this.parentIdProperty = property;
+        }
+        if (property.isScoreProperty()) {
+
+            ElasticsearchPersistentProperty scoreProperty = this.scoreProperty;
+
+            if (scoreProperty != null) {
+                throw new MappingException(
+                        String.format("Attempt to add score property %s but already have property %s registered "
+                                + "as score property. Check your mapping configuration!", property.getField(), scoreProperty.getField()));
+            }
+
+            this.scoreProperty = property;
+        }
     }
 
     /**
@@ -155,6 +170,28 @@ public class SimpleElasticsearchPersistentEntity<T> extends BasicPersistentEntit
     }
 
     /**
+     *
+     * @return
+     */
+    @Override
+    public boolean hasScoreProperty() {
+        return scoreProperty != null;
+    }
+
+    /**
+     * @param result
+     * @param score
+     */
+    @Override
+    public void setPersistentEntityScore(T result, float score) {
+        if (!this.hasScoreProperty()) {
+            return;
+        }
+        getPropertyAccessor(result) //
+                .setProperty(getScoreProperty(), score);
+    }
+
+    /**
      * @return
      */
     @Override
@@ -176,6 +213,35 @@ public class SimpleElasticsearchPersistentEntity<T> extends BasicPersistentEntit
     @Override
     public String getIndexPath() {
         return this.indexPath;
+    }
+
+    /**
+     * Returns the parent Id. Can be {@literal null}.
+     *
+     * @return can be {@literal null}.
+     */
+    @Override
+    public Object getParentId(T source) {
+        ElasticsearchPersistentProperty versionProperty = getVersionProperty();
+        if (versionProperty == null){
+            if (log.isWarnEnabled()) {
+                log.warn("No version defined for entity class {}", entityClass);
+            }
+            return null;
+        }
+        try {
+            return (Long) getPropertyAccessor(source).getProperty(versionProperty);
+        } catch (Exception e) {
+            throw new IllegalStateException("failed to load version field", e);
+        }
+    }
+
+    /**
+     * @return
+     */
+    @Override
+    public boolean hasParent() {
+        return this.parentIdProperty != null;
     }
 
     /**

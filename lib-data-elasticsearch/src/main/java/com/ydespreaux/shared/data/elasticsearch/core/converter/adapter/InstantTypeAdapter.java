@@ -6,6 +6,11 @@ import java.lang.reflect.Type;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 
+/**
+ *
+ * @since 1.1.0
+ * @author Yoann Despréaux
+ */
 public class InstantTypeAdapter implements JsonSerializer<Instant>, JsonDeserializer<Instant> {
     /**
      * Formatter.

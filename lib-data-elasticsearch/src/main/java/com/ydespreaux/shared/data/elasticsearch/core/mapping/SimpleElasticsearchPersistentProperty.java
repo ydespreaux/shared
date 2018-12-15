@@ -1,5 +1,7 @@
 package com.ydespreaux.shared.data.elasticsearch.core.mapping;
 
+import com.ydespreaux.shared.data.elasticsearch.annotations.Parent;
+import com.ydespreaux.shared.data.elasticsearch.annotations.Score;
 import org.springframework.data.mapping.Association;
 import org.springframework.data.mapping.MappingException;
 import org.springframework.data.mapping.PersistentEntity;
@@ -30,10 +32,8 @@ public class SimpleElasticsearchPersistentProperty extends
 		super(property, owner, simpleTypeHolder);
 
 		this.isId = super.isIdProperty() || SUPPORTED_ID_PROPERTY_NAMES.contains(getFieldName());
-//		this.isScore = isAnnotationPresent(Score.class);
-//		this.isParent = isAnnotationPresent(Parent.class);
-		this.isScore = false;
-		this.isParent = false;
+		this.isScore = isAnnotationPresent(Score.class);
+		this.isParent = isAnnotationPresent(Parent.class);
 
 		if (isVersionProperty() && getType() != Long.class) {
 			throw new MappingException(String.format("Version property %s must be of type Long!", property.getName()));

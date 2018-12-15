@@ -9,10 +9,9 @@ import java.lang.annotation.*;
 /**
  * Cette annotation permet de définir un document à indexer dans elasticsearch utilisant un index time-based.
  *
- * @author xpax624
- * @since 9.1.0
+ * @since 1.0.0
+ * @author Yoann Despréaux
  */
-
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
