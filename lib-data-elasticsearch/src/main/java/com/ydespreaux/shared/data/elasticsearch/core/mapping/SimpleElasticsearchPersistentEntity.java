@@ -267,4 +267,18 @@ public class SimpleElasticsearchPersistentEntity<T> extends BasicPersistentEntit
         afterPropertiesSet();
     }
 
+    @Override
+    public String getId(T source) {
+        return getPersistentEntityId(source);
+    }
+
+    @Override
+    public Class<String> getIdType() {
+        return String.class;
+    }
+
+    @Override
+    public Class<T> getJavaType() {
+        return this.entityClass;
+    }
 }

@@ -1,6 +1,7 @@
 package com.ydespreaux.shared.data.elasticsearch.core.mapping;
 
 import org.springframework.data.mapping.PersistentEntity;
+import org.springframework.data.repository.core.EntityInformation;
 import org.springframework.lang.Nullable;
 
 /**
@@ -8,7 +9,7 @@ import org.springframework.lang.Nullable;
  * @author xpax624
  * @since 1.1.0
  */
-public interface ElasticsearchPersistentEntity<T> extends PersistentEntity<T, ElasticsearchPersistentProperty> {
+public interface ElasticsearchPersistentEntity<T> extends PersistentEntity<T, ElasticsearchPersistentProperty>, EntityInformation<T, String> {
 
     /**
      * Retourne le nom de l'alias ou l'ndex de l'entité courante.
